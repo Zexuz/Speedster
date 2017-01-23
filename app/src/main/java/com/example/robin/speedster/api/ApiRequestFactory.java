@@ -9,13 +9,14 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.robin.speedster.AuthService;
-import com.example.robin.speedster.api.endpoints.ApiEndpoints;
 import com.example.robin.speedster.api.endpoints.EndpointsEnumHelper;
 import com.example.robin.speedster.api.endpoints.IApiEndpoint;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,9 +31,8 @@ public class ApiRequestFactory {
         getNewAccessToken();
     }
 
-
-    public void sendApiEndpointRequest(ApiEndpoints apiEnum, Response.Listener<JSONObject> successLister, Response.ErrorListener errorListener) {
-        JsonObjectRequest req = createRequest(apiEnum, successLister, errorListener);
+    public void sendApiEndpointRequest(RequestParameterObject requestInfoDataHelper) {
+        JsonObjectRequest req = createRequest(requestInfoDataHelper);
 
         req.setRetryPolicy(new DefaultRetryPolicy(
                 1000 * 10,
@@ -43,10 +43,11 @@ public class ApiRequestFactory {
         instance.getRequestQueue(_context).add(req);
     }
 
-    private JsonObjectRequest createRequest(ApiEndpoints apiEnum, Response.Listener<JSONObject> successLister, Response.ErrorListener errorListener) {
+    private JsonObjectRequest createRequest(RequestParameterObject requestInfoDataHelper) {
 
-        IApiEndpoint endpoint = EndpointsEnumHelper.getEndPointFromEnum(apiEnum);
-        return new JsonObjectRequest(endpoint.getMethod(), BASE_URL + endpoint.getPath(), null, successLister, errorListener) {
+        IApiEndpoint endpoint = EndpointsEnumHelper.getEndPointFromEnum(requestInfoDataHelper.getApiEnum());
+
+        return new JsonObjectRequest(endpoint.getMethod(), getFullUrl(requestInfoDataHelper, endpoint), null, requestInfoDataHelper.getSuccesslister(), requestInfoDataHelper.getErrorListener()) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
@@ -74,6 +75,26 @@ public class ApiRequestFactory {
             public void onErrorResponse(VolleyError error) {
             }
         });
+    }
+
+    private String getFullUrl(RequestParameterObject requestInfoDataHelper, IApiEndpoint endpoint) {
+        return BASE_URL + endpoint.getPath() + getQueryString(requestInfoDataHelper.getQueryParameters());
+    }
+
+    private String getQueryString(HashMap<String, String> params) {
+        StringBuilder sb = new StringBuilder();
+        for (HashMap.Entry<String, String> e : params.entrySet()) {
+            if (sb.length() > 0) {
+                sb.append('&');
+            }
+            try {
+                sb.append(URLEncoder.encode(e.getKey(), "UTF-8")).append('=').append(URLEncoder.encode(e.getValue(), "UTF-8"));
+            } catch (UnsupportedEncodingException e1) {
+                e1.printStackTrace();
+            }
+        }
+
+        return "?"+sb.toString();
     }
 }
 

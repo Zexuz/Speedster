@@ -11,6 +11,6 @@ public class AllStopsEndpoint implements IApiEndpoint{
 
     @Override
     public String getPath() {
-        return "location.allstops?format=json";
+        return "location.allstops";
     }
 }

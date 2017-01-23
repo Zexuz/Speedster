@@ -5,7 +5,6 @@ import com.android.volley.Request;
 
 public class SearchForStopsByNameEndpoint implements IApiEndpoint {
 
-
     @Override
     public int getMethod() {
         return Request.Method.GET;
@@ -13,6 +12,6 @@ public class SearchForStopsByNameEndpoint implements IApiEndpoint {
 
     @Override
     public String getPath() {
-        return "location.name?_input=Doktor sydows gata&format=json";
+        return "location.name";
     }
 }

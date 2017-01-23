@@ -12,6 +12,6 @@ public class SystemInfoEndpoint implements IApiEndpoint {
 
     @Override
     public String getPath() {
-        return "systeminfo?format=json";
+        return "systeminfo";
     }
 }

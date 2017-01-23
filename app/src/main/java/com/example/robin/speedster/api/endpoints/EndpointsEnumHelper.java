@@ -16,7 +16,7 @@ public class EndpointsEnumHelper {
             case SEARCHFORSTOP:
                 return new SearchForStopsByNameEndpoint();
             case DEPATUREBOARD:
-                return new DepaturesEndpoint();
+                return new DeparturesEndpoint();
             case ARIVALBORD:
                 return new ArivalsEndpoint(); //TODO
             default:
